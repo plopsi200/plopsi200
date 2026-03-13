@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game 2.0</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="game-area">
+            <h1>Snake Game 2.0</h1>
+            <div class="stats">
+                <p>Score: <span id="score">0</span></p>
+                <p>Coins: <span id="coins">0</span></p>
+            </div>
+            <canvas id="snakeGame" width="400" height="400"></canvas>
+            <div class="controls">
+                <button id="startBtn">Start Game</button>
+                <button id="restartBtn" style="display: none;">Restart</button>
+            </div>
+        </div>
+
+        <div class="shop">
+            <h2>Shop</h2>
+            <div class="shop-sections">
+                <div class="shop-section">
+                    <h3>Snake Skins</h3>
+                    <div id="snake-skins" class="skin-list">
+                        <!-- Snake skins will be populated by JS -->
+                    </div>
+                </div>
+                <div class="shop-section">
+                    <h3>Backgrounds</h3>
+                    <div id="bg-skins" class="skin-list">
+                        <!-- Background skins will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>
