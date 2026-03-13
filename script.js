@@ -5,17 +5,20 @@ const gridSize = 20;
 const tileCount = canvas.width / gridSize;
 
 let score = 0;
-let coins = parseInt(localStorage.getItem("snakeCoins")) || 0;
-let purchasedSkins = JSON.parse(localStorage.getItem("snakePurchasedSkins")) || ["default"];
-let equippedSkin = localStorage.getItem("snakeEquippedSkin") || "default";
-let purchasedBackgrounds = JSON.parse(localStorage.getItem("snakePurchasedBackgrounds")) || ["black"];
-let equippedBackground = localStorage.getItem("snakeEquippedBackground") || "black";
+let highScore = parseInt(localStorage.getItem("snackHighScore")) || 0;
+let coins = parseInt(localStorage.getItem("snackCoins")) || 0;
+let purchasedSkins = JSON.parse(localStorage.getItem("snackPurchasedSkins")) || ["default"];
+let equippedSkin = localStorage.getItem("snackEquippedSkin") || "default";
+let purchasedBackgrounds = JSON.parse(localStorage.getItem("snackPurchasedBackgrounds")) || ["black"];
+let equippedBackground = localStorage.getItem("snackEquippedBackground") || "black";
 
 const snakeSkins = [
     { id: "default", name: "Green", color: "lime", price: 0 },
     { id: "blue", name: "Blue", color: "#3498db", price: 10 },
     { id: "purple", name: "Purple", color: "#9b59b6", price: 20 },
     { id: "gold", name: "Gold", color: "#f1c40f", price: 50 },
+    { id: "rainbow", name: "Rainbow", color: "linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)", price: 100 },
+    { id: "ghost", name: "Ghost", color: "rgba(255,255,255,0.5)", price: 80 },
 ];
 
 const backgrounds = [
@@ -23,16 +26,21 @@ const backgrounds = [
     { id: "darkgrey", name: "Grey", color: "#2c3e50", price: 10 },
     { id: "darkgreen", name: "Forest", color: "#1b262c", price: 20 },
     { id: "navy", name: "Navy", color: "#0f3460", price: 30 },
+    { id: "sunset", name: "Sunset", color: "#e67e22", price: 40 },
+    { id: "midnight", name: "Midnight", color: "#2c3e50", price: 50 },
 ];
 
 let snake = [
     { x: 10, y: 10 },
 ];
 
-let food = { x: 5, y: 5 };
+let food = { x: 5, y: 5, color: "red" };
+
+const snackColors = ["red", "orange", "yellow", "pink", "cyan", "white"];
 
 let dx = 0;
 let dy = 0;
+let gameStarted = false;
 
 function gameLoop() {
     update();
@@ -41,6 +49,7 @@ function gameLoop() {
 }
 
 function update() {
+    if (!gameStarted) return;
     if (dx === 0 && dy === 0) return;
 
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
@@ -77,6 +86,7 @@ function update() {
 function spawnFood() {
     food.x = Math.floor(Math.random() * tileCount);
     food.y = Math.floor(Math.random() * tileCount);
+    food.color = snackColors[Math.floor(Math.random() * snackColors.length)];
 
     // Make sure food doesn't spawn on snake
     for (let i = 0; i < snake.length; i++) {
@@ -88,7 +98,14 @@ function spawnFood() {
 }
 
 function gameOver() {
-    alert("Game Over! Score: " + score);
+    gameStarted = false;
+    if (score > highScore) {
+        highScore = score;
+        document.getElementById("high-score").innerText = highScore;
+        alert("New High Score! " + highScore);
+    } else {
+        alert("Game Over! Score: " + score);
+    }
     saveGameData();
     snake = [{ x: 10, y: 10 }];
     dx = 0;
@@ -99,16 +116,18 @@ function gameOver() {
 }
 
 function saveGameData() {
-    localStorage.setItem("snakeCoins", coins);
-    localStorage.setItem("snakePurchasedSkins", JSON.stringify(purchasedSkins));
-    localStorage.setItem("snakeEquippedSkin", equippedSkin);
-    localStorage.setItem("snakePurchasedBackgrounds", JSON.stringify(purchasedBackgrounds));
-    localStorage.setItem("snakeEquippedBackground", equippedBackground);
+    localStorage.setItem("snackHighScore", highScore);
+    localStorage.setItem("snackCoins", coins);
+    localStorage.setItem("snackPurchasedSkins", JSON.stringify(purchasedSkins));
+    localStorage.setItem("snackEquippedSkin", equippedSkin);
+    localStorage.setItem("snackPurchasedBackgrounds", JSON.stringify(purchasedBackgrounds));
+    localStorage.setItem("snackEquippedBackground", equippedBackground);
 }
 
 // Initial UI update
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("coins").innerText = coins;
+    document.getElementById("high-score").innerText = highScore;
     renderShop();
 });
 
@@ -140,8 +159,10 @@ function createShopItem(data, type) {
     if (isOwned) div.classList.add("owned");
     if (isEquipped) div.classList.add("equipped");
 
+    const previewStyle = data.color.includes('gradient') ? `background: ${data.color}` : `background-color: ${data.color}`;
+
     div.innerHTML = `
-        <div class="skin-preview" style="background-color: ${data.color}"></div>
+        <div class="skin-preview" style="${previewStyle}"></div>
         <span class="item-name">${data.name}</span>
         <span class="item-price">${isOwned ? (isEquipped ? "Equipped" : "Owned") : data.price + " Coins"}</span>
     `;
@@ -153,8 +174,13 @@ function createShopItem(data, type) {
         } else {
             if (coins >= data.price) {
                 coins -= data.price;
-                if (type === "skin") purchasedSkins.push(data.id);
-                else purchasedBackgrounds.push(data.id);
+                if (type === "skin") {
+                    purchasedSkins.push(data.id);
+                    equippedSkin = data.id;
+                } else {
+                    purchasedBackgrounds.push(data.id);
+                    equippedBackground = data.id;
+                }
                 document.getElementById("coins").innerText = coins;
             } else {
                 alert("Not enough coins!");
@@ -175,20 +201,35 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw food
-    ctx.fillStyle = "red";
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+    ctx.fillStyle = food.color;
+    ctx.beginPath();
+    ctx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
 
     // Draw snake with equipped skin
     const skin = snakeSkins.find(s => s.id === equippedSkin) || snakeSkins[0];
-    ctx.fillStyle = skin.color;
-    snake.forEach(part => {
+
+    snake.forEach((part, index) => {
+        if (skin.id === 'rainbow') {
+            ctx.fillStyle = `hsl(${(index * 20 + Date.now() / 50) % 360}, 70%, 50%)`;
+        } else {
+            ctx.fillStyle = skin.color;
+        }
         ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
     });
+
+    if (!gameStarted) {
+        ctx.fillStyle = "white";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Press any Arrow Key to Start", canvas.width / 2, canvas.height / 2);
+    }
 }
 
 window.addEventListener("keydown", e => {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
+        gameStarted = true;
     }
     switch (e.key) {
         case "ArrowUp":
