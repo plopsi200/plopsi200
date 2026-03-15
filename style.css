@@ -22,37 +22,45 @@ canvas {
 }
 
 #score-container {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     font-size: 20px;
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 8px;
 }
 
 #shop-container {
     margin-top: 20px;
     background-color: #34495e;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .shop-items {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 15px;
     flex-wrap: wrap;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .shop-item {
     background-color: #2c3e50;
-    border: 2px solid #7f8c8d;
-    border-radius: 5px;
-    padding: 10px;
-    width: 100px;
+    border: 3px solid #7f8c8d;
+    border-radius: 10px;
+    padding: 12px;
+    width: 110px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .shop-item:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .shop-item.owned {
@@ -62,6 +70,7 @@ canvas {
 .shop-item.equipped {
     border-color: #f1c40f;
     background-color: #4a6278;
+    box-shadow: 0 0 10px #f1c40f;
 }
 
 .skin-preview {
