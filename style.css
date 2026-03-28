@@ -22,8 +22,14 @@ canvas {
 }
 
 #score-container {
-    margin-bottom: 10px;
-    font-size: 20px;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    background-color: #34495e;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 #shop-container {
@@ -43,16 +49,16 @@ canvas {
 
 .shop-item {
     background-color: #2c3e50;
-    border: 2px solid #7f8c8d;
-    border-radius: 5px;
+    border: 3px solid #7f8c8d;
+    border-radius: 8px;
     padding: 10px;
     width: 100px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.3s;
 }
 
 .shop-item:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
 }
 
 .shop-item.owned {
