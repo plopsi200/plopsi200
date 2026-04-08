@@ -6,7 +6,7 @@ body {
     margin: 0;
     background-color: #2c3e50;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #game-container {
@@ -22,37 +22,40 @@ canvas {
 }
 
 #score-container {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-size: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
 
 #shop-container {
     margin-top: 20px;
     background-color: #34495e;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 20px;
+    border-radius: 15px;
 }
 
 .shop-items {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 15px;
     flex-wrap: wrap;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .shop-item {
     background-color: #2c3e50;
-    border: 2px solid #7f8c8d;
-    border-radius: 5px;
-    padding: 10px;
-    width: 100px;
+    border: 3px solid #7f8c8d;
+    border-radius: 10px;
+    padding: 15px;
+    width: 110px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.3s;
 }
 
 .shop-item:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
 }
 
 .shop-item.owned {
@@ -65,20 +68,22 @@ canvas {
 }
 
 .skin-preview {
-    width: 40px;
-    height: 40px;
-    margin: 0 auto 5px;
-    border: 1px solid #000;
+    width: 45px;
+    height: 45px;
+    margin: 0 auto 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .item-name {
     display: block;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: bold;
     margin-bottom: 5px;
 }
 
 .item-price {
     display: block;
-    font-size: 12px;
+    font-size: 14px;
     color: #f1c40f;
 }
