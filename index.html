@@ -3,29 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game 2.0</title>
+    <title>Snack Game 2.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
-        <h1>Snake Game 2.0</h1>
+        <h1>Snack Game 2.0</h1>
         <div id="score-container">
-            <span>Score: <span id="score">0</span></span>
-            <span>Coins: <span id="coins">0</span></span>
+            <div class="score-box">Score: <span id="score">0</span></div>
+            <div class="score-box">Coins: <span id="coins">0</span></div>
         </div>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+        <div id="canvas-wrapper">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div id="game-over-overlay">
+                <div class="overlay-content">
+                    <h2>GAME OVER</h2>
+                    <p>Final Score: <span id="final-score">0</span></p>
+                    <button id="restart-btn">Restart</button>
+                </div>
+            </div>
+        </div>
 
         <div id="shop-container">
-            <h2>Shop</h2>
+            <h2>Snack Shop</h2>
             <div class="shop-section">
-                <h3>Snake Skins</h3>
-                <div id="snake-skins" class="shop-items">
+                <h3>Snack Skins</h3>
+                <div id="snack-skins" class="shop-items">
                     <!-- Skins will be injected here -->
                 </div>
             </div>
             <div class="shop-section">
                 <h3>Backgrounds</h3>
-                <div id="backgrounds" class="shop-items">
+                <div id="background-skins" class="shop-items">
                     <!-- Backgrounds will be injected here -->
                 </div>
             </div>
