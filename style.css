@@ -1,58 +1,136 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
-    background-color: #2c3e50;
-    color: white;
-    font-family: Arial, sans-serif;
+    padding: 20px 0;
+    background-color: #1a1a2e;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #game-container {
     text-align: center;
-    max-width: 600px;
-    margin: 20px auto;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
 }
 
-canvas {
-    border: 5px solid #ecf0f1;
-    display: block;
-    margin: 0 auto;
+h1 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 32px;
+    color: #e94560;
 }
 
 #score-container {
-    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 15px;
     font-size: 20px;
+    font-weight: 600;
+}
+
+#canvas-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+canvas {
+    border: 4px solid #16213e;
+    border-radius: 8px;
+    display: block;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+#game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 52, 96, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    z-index: 10;
+}
+
+#game-over-overlay h2 {
+    font-size: 36px;
+    margin: 0 0 10px 0;
+    color: #e94560;
+}
+
+#game-over-overlay p {
+    font-size: 20px;
+    margin: 0 0 20px 0;
+}
+
+#restart-btn {
+    padding: 10px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #e94560;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#restart-btn:hover {
+    background-color: #0f3460;
 }
 
 #shop-container {
-    margin-top: 20px;
-    background-color: #34495e;
-    padding: 15px;
+    margin-top: 25px;
+    background-color: #16213e;
+    padding: 20px;
     border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#shop-container h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #f1c40f;
+}
+
+.shop-section h3 {
+    margin: 15px 0 10px 0;
+    font-size: 18px;
+    color: #e94560;
 }
 
 .shop-items {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 15px;
     flex-wrap: wrap;
-    margin-bottom: 15px;
 }
 
 .shop-item {
-    background-color: #2c3e50;
-    border: 2px solid #7f8c8d;
-    border-radius: 5px;
-    padding: 10px;
-    width: 100px;
+    background-color: #0f3460;
+    border: 3px solid #533483;
+    border-radius: 8px;
+    padding: 12px;
+    width: 95px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.3s;
 }
 
 .shop-item:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
 }
 
 .shop-item.owned {
@@ -61,24 +139,27 @@ canvas {
 
 .shop-item.equipped {
     border-color: #f1c40f;
-    background-color: #4a6278;
+    background-color: #1f4068;
 }
 
 .skin-preview {
     width: 40px;
     height: 40px;
-    margin: 0 auto 5px;
-    border: 1px solid #000;
+    margin: 0 auto 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .item-name {
     display: block;
     font-size: 14px;
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
 .item-price {
     display: block;
     font-size: 12px;
     color: #f1c40f;
+    font-weight: bold;
 }
