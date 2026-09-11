@@ -1,17 +1,15 @@
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-
+let canvas, ctx;
 const gridSize = 20;
-const tileCount = canvas.width / gridSize;
+let tileCount = 20;
 
 let score = 0;
-let coins = parseInt(localStorage.getItem("snakeCoins")) || 0;
-let purchasedSkins = JSON.parse(localStorage.getItem("snakePurchasedSkins")) || ["default"];
-let equippedSkin = localStorage.getItem("snakeEquippedSkin") || "default";
-let purchasedBackgrounds = JSON.parse(localStorage.getItem("snakePurchasedBackgrounds")) || ["black"];
-let equippedBackground = localStorage.getItem("snakeEquippedBackground") || "black";
+let coins = parseInt(localStorage.getItem("snackCoins")) || 0;
+let purchasedSkins = JSON.parse(localStorage.getItem("snackPurchasedSkins")) || ["default"];
+let equippedSkin = localStorage.getItem("snackEquippedSkin") || "default";
+let purchasedBackgrounds = JSON.parse(localStorage.getItem("snackPurchasedBackgrounds")) || ["black"];
+let equippedBackground = localStorage.getItem("snackEquippedBackground") || "black";
 
-const snakeSkins = [
+const snackSkins = [
     { id: "default", name: "Green", color: "lime", price: 0 },
     { id: "blue", name: "Blue", color: "#3498db", price: 10 },
     { id: "purple", name: "Purple", color: "#9b59b6", price: 20 },
@@ -20,30 +18,41 @@ const snakeSkins = [
 
 const backgrounds = [
     { id: "black", name: "Black", color: "black", price: 0 },
-    { id: "darkgrey", name: "Grey", color: "#2c3e50", price: 10 },
-    { id: "darkgreen", name: "Forest", color: "#1b262c", price: 20 },
-    { id: "navy", name: "Navy", color: "#0f3460", price: 30 },
+    { id: "grey", name: "Grey", color: "#7f8c8d", price: 10 },
+    { id: "forest", name: "Forest", color: "#27ae60", price: 20 },
+    { id: "navy", name: "Navy", color: "#2980b9", price: 30 },
 ];
 
-let snake = [
-    { x: 10, y: 10 },
-];
+const foodColors = ["#e74c3c", "#e67e22", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6"];
 
-let food = { x: 5, y: 5 };
+let snack = [{ x: 10, y: 10 }];
+let food = { x: 5, y: 5, color: foodColors[0] };
 
 let dx = 0;
 let dy = 0;
+let lastDx = 0;
+let lastDy = 0;
 
-function gameLoop() {
+let lastRenderTime = 0;
+const gameSpeed = 10; // FPS (100ms)
+
+function gameLoop(currentTime) {
+    window.requestAnimationFrame(gameLoop);
+    const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
+    if (secondsSinceLastRender < 1 / gameSpeed) return;
+    lastRenderTime = currentTime;
+
     update();
     draw();
-    setTimeout(gameLoop, 100);
 }
 
 function update() {
     if (dx === 0 && dy === 0) return;
 
-    const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+    lastDx = dx;
+    lastDy = dy;
+
+    const head = { x: snack[0].x + dx, y: snack[0].y + dy };
 
     // Collision with walls
     if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
@@ -52,16 +61,16 @@ function update() {
     }
 
     // Collision with self
-    for (let i = 0; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
+    for (let i = 0; i < snack.length; i++) {
+        if (head.x === snack[i].x && head.y === snack[i].y) {
             gameOver();
             return;
         }
     }
 
-    snake.unshift(head);
+    snack.unshift(head);
 
-    // Check if snake ate food
+    // Check if snack ate food
     if (head.x === food.x && head.y === food.y) {
         score++;
         coins++;
@@ -70,58 +79,83 @@ function update() {
         document.getElementById("coins").innerText = coins;
         spawnFood();
     } else {
-        snake.pop();
+        snack.pop();
     }
 }
 
 function spawnFood() {
-    food.x = Math.floor(Math.random() * tileCount);
-    food.y = Math.floor(Math.random() * tileCount);
+    if (snack.length >= tileCount * tileCount) return;
 
-    // Make sure food doesn't spawn on snake
-    for (let i = 0; i < snake.length; i++) {
-        if (snake[i].x === food.x && snake[i].y === food.y) {
-            spawnFood();
-            return;
+    const emptyTiles = [];
+    for (let x = 0; x < tileCount; x++) {
+        for (let y = 0; y < tileCount; y++) {
+            const isOccupied = snack.some(part => part.x === x && part.y === y);
+            if (!isOccupied) {
+                emptyTiles.push({ x, y });
+            }
         }
+    }
+
+    if (emptyTiles.length > 0) {
+        const randomIndex = Math.floor(Math.random() * emptyTiles.length);
+        const randomColorIndex = Math.floor(Math.random() * foodColors.length);
+        food = {
+            x: emptyTiles[randomIndex].x,
+            y: emptyTiles[randomIndex].y,
+            color: foodColors[randomColorIndex]
+        };
     }
 }
 
 function gameOver() {
-    alert("Game Over! Score: " + score);
     saveGameData();
-    snake = [{ x: 10, y: 10 }];
     dx = 0;
     dy = 0;
+    lastDx = 0;
+    lastDy = 0;
+    document.getElementById("final-score").innerText = score;
+    const overlay = document.getElementById("game-over-overlay");
+    if (overlay) {
+        overlay.style.display = "flex";
+    }
+}
+
+function restartGame() {
+    const overlay = document.getElementById("game-over-overlay");
+    if (overlay) {
+        overlay.style.display = "none";
+    }
+    snack = [{ x: 10, y: 10 }];
+    dx = 0;
+    dy = 0;
+    lastDx = 0;
+    lastDy = 0;
     score = 0;
     document.getElementById("score").innerText = score;
     spawnFood();
+    draw();
 }
 
 function saveGameData() {
-    localStorage.setItem("snakeCoins", coins);
-    localStorage.setItem("snakePurchasedSkins", JSON.stringify(purchasedSkins));
-    localStorage.setItem("snakeEquippedSkin", equippedSkin);
-    localStorage.setItem("snakePurchasedBackgrounds", JSON.stringify(purchasedBackgrounds));
-    localStorage.setItem("snakeEquippedBackground", equippedBackground);
+    localStorage.setItem("snackCoins", coins);
+    localStorage.setItem("snackPurchasedSkins", JSON.stringify(purchasedSkins));
+    localStorage.setItem("snackEquippedSkin", equippedSkin);
+    localStorage.setItem("snackPurchasedBackgrounds", JSON.stringify(purchasedBackgrounds));
+    localStorage.setItem("snackEquippedBackground", equippedBackground);
 }
 
-// Initial UI update
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("coins").innerText = coins;
-    renderShop();
-});
-
 function renderShop() {
-    const snakeShop = document.getElementById("snake-skins");
-    const bgShop = document.getElementById("backgrounds");
+    const snackShop = document.getElementById("snack-skins");
+    const bgShop = document.getElementById("background-skins");
 
-    snakeShop.innerHTML = "";
+    if (!snackShop || !bgShop) return;
+
+    snackShop.innerHTML = "";
     bgShop.innerHTML = "";
 
-    snakeSkins.forEach(skin => {
+    snackSkins.forEach(skin => {
         const item = createShopItem(skin, "skin");
-        snakeShop.appendChild(item);
+        snackShop.appendChild(item);
     });
 
     backgrounds.forEach(bg => {
@@ -153,8 +187,13 @@ function createShopItem(data, type) {
         } else {
             if (coins >= data.price) {
                 coins -= data.price;
-                if (type === "skin") purchasedSkins.push(data.id);
-                else purchasedBackgrounds.push(data.id);
+                if (type === "skin") {
+                    purchasedSkins.push(data.id);
+                    equippedSkin = data.id;
+                } else {
+                    purchasedBackgrounds.push(data.id);
+                    equippedBackground = data.id;
+                }
                 document.getElementById("coins").innerText = coins;
             } else {
                 alert("Not enough coins!");
@@ -163,47 +202,81 @@ function createShopItem(data, type) {
         }
         saveGameData();
         renderShop();
+        draw();
     };
 
     return div;
 }
 
 function draw() {
+    if (!ctx) return;
+
     // Clear canvas with equipped background
     const bg = backgrounds.find(b => b.id === equippedBackground) || backgrounds[0];
     ctx.fillStyle = bg.color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw food
-    ctx.fillStyle = "red";
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+    // Draw food as circle
+    ctx.fillStyle = food.color || "#e74c3c";
+    ctx.beginPath();
+    ctx.arc(
+        food.x * gridSize + gridSize / 2,
+        food.y * gridSize + gridSize / 2,
+        gridSize / 2 - 1,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
 
-    // Draw snake with equipped skin
-    const skin = snakeSkins.find(s => s.id === equippedSkin) || snakeSkins[0];
+    // Draw snack with equipped skin
+    const skin = snackSkins.find(s => s.id === equippedSkin) || snackSkins[0];
     ctx.fillStyle = skin.color;
-    snake.forEach(part => {
-        ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
+    snack.forEach(part => {
+        ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 1, gridSize - 1);
     });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    canvas = document.getElementById("gameCanvas");
+    ctx = canvas.getContext("2d");
+    tileCount = canvas.width / gridSize;
+
+    document.getElementById("coins").innerText = coins;
+    document.getElementById("score").innerText = score;
+
+    const restartBtn = document.getElementById("restart-btn");
+    if (restartBtn) {
+        restartBtn.addEventListener("click", restartGame);
+    }
+
+    renderShop();
+    spawnFood();
+    draw();
+    window.requestAnimationFrame(gameLoop);
+});
+
 window.addEventListener("keydown", e => {
+    const overlay = document.getElementById("game-over-overlay");
+    if (overlay && overlay.style.display === "flex") {
+        return;
+    }
+
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
     }
+
     switch (e.key) {
         case "ArrowUp":
-            if (dy !== 1) { dx = 0; dy = -1; }
+            if (lastDy !== 1) { dx = 0; dy = -1; }
             break;
         case "ArrowDown":
-            if (dy !== -1) { dx = 0; dy = 1; }
+            if (lastDy !== -1) { dx = 0; dy = 1; }
             break;
         case "ArrowLeft":
-            if (dx !== 1) { dx = -1; dy = 0; }
+            if (lastDx !== 1) { dx = -1; dy = 0; }
             break;
         case "ArrowRight":
-            if (dx !== -1) { dx = 1; dy = 0; }
+            if (lastDx !== -1) { dx = 1; dy = 0; }
             break;
     }
 });
-
-gameLoop();
