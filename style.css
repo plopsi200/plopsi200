@@ -2,28 +2,81 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    padding: 20px 0;
+    box-sizing: border-box;
     background-color: #2c3e50;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #game-container {
     text-align: center;
     max-width: 600px;
-    margin: 20px auto;
+    margin: 0 auto;
+}
+
+#score-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 15px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#canvas-wrapper {
+    position: relative;
+    display: inline-block;
 }
 
 canvas {
     border: 5px solid #ecf0f1;
     display: block;
     margin: 0 auto;
+    border-radius: 4px;
 }
 
-#score-container {
+#game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+}
+
+#game-over-overlay h2 {
+    color: #e74c3c;
+    font-size: 32px;
     margin-bottom: 10px;
+}
+
+#game-over-overlay p {
     font-size: 20px;
+    margin-bottom: 20px;
+}
+
+#restart-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #27ae60;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#restart-btn:hover {
+    background-color: #2ec16c;
 }
 
 #shop-container {
@@ -43,16 +96,16 @@ canvas {
 
 .shop-item {
     background-color: #2c3e50;
-    border: 2px solid #7f8c8d;
-    border-radius: 5px;
+    border: 3px solid #7f8c8d;
+    border-radius: 8px;
     padding: 10px;
     width: 100px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.3s ease;
 }
 
 .shop-item:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
 }
 
 .shop-item.owned {
@@ -69,11 +122,13 @@ canvas {
     height: 40px;
     margin: 0 auto 5px;
     border: 1px solid #000;
+    border-radius: 4px;
 }
 
 .item-name {
     display: block;
     font-size: 14px;
+    font-weight: bold;
     margin-bottom: 5px;
 }
 
